@@ -1,8 +1,7 @@
 import React from 'react';
-import { Instagram, Linkedin, Twitter, Mail, MapPin, Award, Camera } from 'lucide-react';
+import { Instagram, Linkedin, Twitter, Mail, Award, Camera } from 'lucide-react';
 import { TeamMember } from '../types';
 import { useInView } from '../hooks/useInView';
-import RippleButton from './RippleButton';
 
 const TeamSection: React.FC = () => {
   const { ref, inView } = useInView(0.1);
@@ -177,40 +176,46 @@ const TeamCard: React.FC<TeamCardProps> = ({ member, index }) => {
 
         <div className="flex justify-center space-x-3">
           {member.social.instagram && (
-            <RippleButton
-              onClick={() => window.open(member.social.instagram, '_blank')}
+            <a
+              href={member.social.instagram}
+              target="_blank"
+              rel="noopener noreferrer"
               className="p-2 text-gray-400 hover:text-pink-600 transition-colors duration-200"
               aria-label="Instagram"
             >
               <Instagram className="w-5 h-5" />
-            </RippleButton>
+            </a>
           )}
           {member.social.linkedin && (
-            <RippleButton
-              onClick={() => window.open(member.social.linkedin, '_blank')}
+            <a
+              href={member.social.linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
               className="p-2 text-gray-400 hover:text-blue-600 transition-colors duration-200"
               aria-label="LinkedIn"
             >
               <Linkedin className="w-5 h-5" />
-            </RippleButton>
+            </a>
           )}
           {member.social.twitter && (
-            <RippleButton
-              onClick={() => window.open(member.social.twitter, '_blank')}
+            <a
+              href={member.social.twitter}
+              target="_blank"
+              rel="noopener noreferrer"
               className="p-2 text-gray-400 hover:text-blue-400 transition-colors duration-200"
               aria-label="Twitter"
             >
               <Twitter className="w-5 h-5" />
-            </RippleButton>
+            </a>
           )}
           {member.social.email && (
-            <RippleButton
-              onClick={() => window.open(`mailto:${member.social.email}`)}
+            <a
+              href={`mailto:${member.social.email}`}
               className="p-2 text-gray-400 hover:text-green-600 transition-colors duration-200"
               aria-label="Email"
             >
               <Mail className="w-5 h-5" />
-            </RippleButton>
+            </a>
           )}
         </div>
       </div>

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Play, Pause, Volume2, VolumeX } from 'lucide-react';
+import { Play, Pause } from 'lucide-react';
 import RippleButton from './RippleButton';
 
 interface MarqueeItem {
@@ -11,7 +11,6 @@ interface MarqueeItem {
 const InfiniteMarquee: React.FC = () => {
   const [isPaused, setIsPaused] = useState(false);
   const [speed, setSpeed] = useState(1);
-  const [isMuted, setIsMuted] = useState(true);
   const marqueeRef = useRef<HTMLDivElement>(null);
 
   const items: MarqueeItem[] = [
@@ -91,14 +90,6 @@ const InfiniteMarquee: React.FC = () => {
             +
           </RippleButton>
         </div>
-
-        <RippleButton
-          onClick={() => setIsMuted(!isMuted)}
-          className="p-2 bg-white/20 rounded-full backdrop-blur-sm hover:bg-white/30 transition-colors duration-200"
-          aria-label={isMuted ? 'Unmute' : 'Mute'}
-        >
-          {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-        </RippleButton>
       </div>
     </div>
   );

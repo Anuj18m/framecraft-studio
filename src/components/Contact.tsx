@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, Phone, MapPin, Send, CheckCircle } from 'lucide-react';
+import { Mail, Phone, MapPin, Send } from 'lucide-react';
 import { useInView } from '../hooks/useInView';
 import RippleButton from './RippleButton';
 
@@ -10,25 +10,18 @@ const Contact: React.FC = () => {
     subject: '',
     message: ''
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
   const { ref, inView } = useInView(0.1);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    
-    // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    setIsSubmitting(false);
-    setIsSubmitted(true);
-    
-    // Reset form after success message
-    setTimeout(() => {
-      setIsSubmitted(false);
-      setFormData({ name: '', email: '', subject: '', message: '' });
-    }, 3000);
+
+    const recipient = 'hello@framecraft.com';
+    const subject = encodeURIComponent(formData.subject || 'Photography inquiry');
+    const body = encodeURIComponent(
+      `Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`
+    );
+
+    window.location.href = `mailto:${recipient}?subject=${subject}&body=${body}`;
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -69,19 +62,22 @@ const Contact: React.FC = () => {
                   icon: Mail,
                   title: 'Email Us',
                   content: 'hello@framecraft.com',
-                  action: 'mailto:hello@framecraft.com'
+                  action: 'mailto:hello@framecraft.com',
+                  external: false
                 },
                 {
                   icon: Phone,
                   title: 'Call Us',
                   content: '+91 8329758125',
-                  action: 'tel:+91 8329758125'
+                  action: 'tel:+91 8329758125',
+                  external: false
                 },
                 {
                   icon: MapPin,
                   title: 'Studio Location',
                   content: 'Thakur Village, Kandivali East, Mumbai',
-                  action: 'https://maps.google.com'
+                  action: 'https://maps.google.com',
+                  external: true
                 }
               ].map((contact, index) => (
                 <div 
@@ -100,12 +96,14 @@ const Contact: React.FC = () => {
                     <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
                       {contact.title}
                     </h4>
-                    <RippleButton
-                      onClick={() => window.open(contact.action, '_blank')}
+                    <a
+                      href={contact.action}
+                      target={contact.external ? '_blank' : undefined}
+                      rel={contact.external ? 'noopener noreferrer' : undefined}
                       className="text-gray-600 dark:text-gray-300 hover:text-amber-600 dark:hover:text-amber-400 transition-colors duration-200"
                     >
                       {contact.content}
-                    </RippleButton>
+                    </a>
                   </div>
                 </div>
               ))}
@@ -182,31 +180,17 @@ const Contact: React.FC = () => {
 
               <RippleButton
                 type="submit"
-                disabled={isSubmitting || isSubmitted}
-                className={`w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all duration-300 ${
-                  isSubmitted 
-                    ? 'bg-green-600 text-white'
-                    : 'bg-amber-600 hover:bg-amber-700 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-1'
-                } ${isSubmitting ? 'opacity-75 cursor-not-allowed' : ''}`}
+                className="w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all duration-300 bg-amber-600 hover:bg-amber-700 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-1"
               >
-                {isSubmitted ? (
-                  <span className="flex items-center justify-center">
-                    <CheckCircle className="w-5 h-5 mr-2" />
-                    Message Sent!
-                  </span>
-                ) : isSubmitting ? (
-                  <span className="flex items-center justify-center">
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                    Sending...
-                  </span>
-                ) : (
-                  <span className="flex items-center justify-center">
-                    Book Consultation
-                    <Send className="w-5 h-5 ml-2" />
-                  </span>
-                )}
+                <span className="flex items-center justify-center">
+                  Open Email Client
+                  <Send className="w-5 h-5 ml-2" />
+                </span>
               </RippleButton>
             </form>
+            <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">
+              This opens your email app with a prefilled message. No backend is required.
+            </p>
           </div>
         </div>
       </div>

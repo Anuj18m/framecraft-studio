@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRight, Play, Camera, Award, Users, Image } from 'lucide-react';
+import { ArrowRight, Camera, Award, Users, Image } from 'lucide-react';
 import RippleButton from './RippleButton';
 import TypewriterText from './TypewriterText';
 
@@ -39,15 +39,6 @@ const Hero: React.FC = () => {
               </span>
             </RippleButton>
             
-            <RippleButton
-              onClick={() => console.log('Play demo')}
-              className="group px-8 py-4 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-amber-600 dark:hover:border-amber-400 hover:text-amber-600 dark:hover:text-amber-400 rounded-xl font-semibold text-lg transition-all duration-200"
-            >
-              <span className="flex items-center">
-                <Play className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200" />
-                Watch Showreel
-              </span>
-            </RippleButton>
           </div>
           
           <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">

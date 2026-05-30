@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Eye, Heart, Share2, Tag, Camera, MapPin } from 'lucide-react';
+import { Eye, Heart, Share2, Tag, Camera, MapPin, ImageOff } from 'lucide-react';
 import { GalleryItem } from '../types';
 import { useInView } from '../hooks/useInView';
 import RippleButton from './RippleButton';
@@ -12,8 +12,48 @@ interface ImageCardProps {
 
 const ImageCard: React.FC<ImageCardProps> = ({ item, index, viewMode }) => {
   const [isLoaded, setIsLoaded] = useState(false);
+  const [hasError, setHasError] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const { ref, inView } = useInView(0.1);
+
+  const handleImageLoad = () => {
+    setHasError(false);
+    setIsLoaded(true);
+  };
+
+  const handleImageError = () => {
+    setHasError(true);
+    setIsLoaded(true);
+  };
+
+  const renderImage = (heightClass: string) => {
+    if (hasError) {
+      return (
+        <div className={`flex items-center justify-center ${heightClass} bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-300`}>
+          <div className="text-center px-4">
+            <ImageOff className="w-8 h-8 mx-auto mb-2" />
+            <p className="text-sm font-medium">Image unavailable</p>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <>
+        <img
+          src={item.image}
+          alt={item.title}
+          className={`w-full ${heightClass} object-cover transition-transform duration-500 hover:scale-105 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+          onLoad={handleImageLoad}
+          onError={handleImageError}
+        />
+
+        {!isLoaded && (
+          <div className={`absolute inset-0 ${heightClass} bg-gray-200 dark:bg-gray-700 animate-pulse`} />
+        )}
+      </>
+    );
+  };
 
   if (viewMode === 'list') {
     return (
@@ -25,12 +65,7 @@ const ImageCard: React.FC<ImageCardProps> = ({ item, index, viewMode }) => {
         style={{ transitionDelay: `${index * 100}ms` }}
       >
         <div className="md:w-1/3 relative overflow-hidden">
-          <img
-            src={item.image}
-            alt={item.title}
-            className="w-full h-64 md:h-full object-cover transition-transform duration-500 hover:scale-105"
-            onLoad={() => setIsLoaded(true)}
-          />
+          {renderImage('h-64 md:h-full')}
         </div>
         <div className="md:w-2/3 p-6 flex flex-col justify-between">
           <div>
@@ -103,18 +138,9 @@ const ImageCard: React.FC<ImageCardProps> = ({ item, index, viewMode }) => {
       onMouseLeave={() => setIsHovered(false)}
     >
       <div className="relative overflow-hidden">
-        <img
-          src={item.image}
-          alt={item.title}
-          className={`w-full h-64 object-cover transition-all duration-500 ${
-            isHovered ? 'scale-110' : 'scale-100'
-          } ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
-          onLoad={() => setIsLoaded(true)}
-        />
-        
-        {!isLoaded && (
-          <div className="absolute inset-0 bg-gray-200 dark:bg-gray-700 animate-pulse" />
-        )}
+        <div className={`${isHovered ? 'scale-110' : 'scale-100'} transition-transform duration-500`}>
+          {renderImage('h-64')}
+        </div>
 
         {/* Overlay */}
         <div className={`absolute inset-0 bg-black/60 flex items-center justify-center transition-opacity duration-300 ${

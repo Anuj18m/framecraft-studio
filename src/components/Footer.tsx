@@ -1,16 +1,29 @@
 import React from 'react';
 import { Camera, Heart, Instagram, Twitter, Linkedin, Mail } from 'lucide-react';
-import RippleButton from './RippleButton';
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
 
-  const footerLinks = {
-    Services: ['Wedding Photography', 'Portrait Sessions', 'Commercial Shoots', 'Event Photography'],
-    Company: ['About Us', 'Our Team', 'Blog', 'Contact'],
-    Resources: ['Portfolio', 'Pricing', 'FAQ', 'Booking'],
-    Legal: ['Privacy Policy', 'Terms of Service', 'Copyright', 'Usage Rights']
-  };
+  const footerLinks = [
+    {
+      title: 'Navigate',
+      links: [
+        { label: 'Portfolio', href: '#gallery' },
+        { label: 'Services', href: '#services' },
+        { label: 'Team', href: '#team' },
+        { label: 'Timeline', href: '#timeline' },
+        { label: 'Contact', href: '#contact' }
+      ]
+    },
+    {
+      title: 'Connect',
+      links: [
+        { label: 'Email Us', href: 'mailto:hello@framecraft.com' },
+        { label: 'Instagram', href: 'https://instagram.com' },
+        { label: 'LinkedIn', href: 'https://linkedin.com' }
+      ]
+    }
+  ];
 
   const socialLinks = [
     { icon: Instagram, href: 'https://instagram.com', label: 'Instagram' },
@@ -18,6 +31,8 @@ const Footer: React.FC = () => {
     { icon: Linkedin, href: 'https://linkedin.com', label: 'LinkedIn' },
     { icon: Mail, href: 'mailto:hello@framecraft.com', label: 'Email' }
   ];
+
+  const isExternal = (href: string) => href.startsWith('http');
 
   return (
     <footer className="bg-gray-900 text-white">
@@ -35,31 +50,35 @@ const Footer: React.FC = () => {
             </p>
             <div className="flex space-x-4">
               {socialLinks.map((social) => (
-                <RippleButton
+                <a
                   key={social.label}
-                  onClick={() => window.open(social.href, '_blank')}
+                  href={social.href}
+                  target={isExternal(social.href) ? '_blank' : undefined}
+                  rel={isExternal(social.href) ? 'noopener noreferrer' : undefined}
                   className="p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors duration-200"
                   aria-label={social.label}
                 >
                   <social.icon className="w-5 h-5" />
-                </RippleButton>
+                </a>
               ))}
             </div>
           </div>
 
           {/* Links */}
-          {Object.entries(footerLinks).map(([category, links]) => (
-            <div key={category}>
-              <h3 className="text-lg font-semibold mb-4">{category}</h3>
+          {footerLinks.map(({ title, links }) => (
+            <div key={title}>
+              <h3 className="text-lg font-semibold mb-4">{title}</h3>
               <ul className="space-y-3">
                 {links.map((link) => (
-                  <li key={link}>
-                    <RippleButton
-                      onClick={() => console.log(`Navigate to ${link}`)}
+                  <li key={link.label}>
+                    <a
+                      href={link.href}
+                      target={isExternal(link.href) ? '_blank' : undefined}
+                      rel={isExternal(link.href) ? 'noopener noreferrer' : undefined}
                       className="text-gray-400 hover:text-white transition-colors duration-200"
                     >
-                      {link}
-                    </RippleButton>
+                      {link.label}
+                    </a>
                   </li>
                 ))}
               </ul>
@@ -76,18 +95,12 @@ const Footer: React.FC = () => {
               <span>from algoonerd</span>
             </div>
             <div className="flex space-x-6 text-sm text-gray-400">
-              <RippleButton
-                onClick={() => console.log('Privacy policy')}
-                className="hover:text-white transition-colors duration-200"
-              >
+              <a href="#contact" className="hover:text-white transition-colors duration-200">
                 Privacy Policy
-              </RippleButton>
-              <RippleButton
-                onClick={() => console.log('Terms of service')}
-                className="hover:text-white transition-colors duration-200"
-              >
+              </a>
+              <a href="#contact" className="hover:text-white transition-colors duration-200">
                 Terms of Service
-              </RippleButton>
+              </a>
             </div>
           </div>
         </div>

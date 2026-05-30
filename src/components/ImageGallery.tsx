@@ -1,9 +1,84 @@
 import React, { useState, useMemo } from 'react';
-import { Search, Filter, Grid, List, Camera, MapPin } from 'lucide-react';
+import { Search, Filter, Grid, List } from 'lucide-react';
 import { GalleryItem } from '../types';
 import { useInView } from '../hooks/useInView';
 import RippleButton from './RippleButton';
 import ImageCard from './ImageCard';
+
+const galleryItems: GalleryItem[] = [
+  {
+    id: '1',
+    title: 'Sarah & Michael Wedding',
+    category: 'wedding',
+    image: 'https://images.pexels.com/photos/1024993/pexels-photo-1024993.jpeg?auto=compress&cs=tinysrgb&w=800',
+    description: 'Romantic outdoor ceremony captured in golden hour light',
+    tags: ['wedding', 'outdoor', 'golden hour', 'romantic'],
+    client: 'Sarah & Michael',
+    location: 'Napa Valley, CA',
+    camera: 'Canon EOS R5',
+    lens: '85mm f/1.4'
+  },
+  {
+    id: '2',
+    title: 'Corporate Headshots',
+    category: 'portrait',
+    image: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=800',
+    description: 'Professional executive portraits for tech startup',
+    tags: ['portrait', 'corporate', 'professional', 'headshot'],
+    client: 'TechCorp Inc.',
+    location: 'San Francisco, CA',
+    camera: 'Sony A7R IV',
+    lens: '70-200mm f/2.8'
+  },
+  {
+    id: '3',
+    title: 'Fashion Editorial',
+    category: 'fashion',
+    image: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=800',
+    description: 'High-fashion editorial shoot for luxury brand',
+    tags: ['fashion', 'editorial', 'luxury', 'studio'],
+    client: 'Vogue Magazine',
+    location: 'Los Angeles, CA',
+    camera: 'Hasselblad X1D',
+    lens: '90mm f/3.2'
+  },
+  {
+    id: '4',
+    title: 'Product Photography',
+    category: 'commercial',
+    image: 'https://images.pexels.com/photos/577585/pexels-photo-577585.jpeg?auto=compress&cs=tinysrgb&w=800',
+    description: 'Luxury watch collection for e-commerce catalog',
+    tags: ['product', 'commercial', 'luxury', 'catalog'],
+    client: 'Timepiece Co.',
+    location: 'Studio, NYC',
+    camera: 'Canon EOS R5',
+    lens: '100mm f/2.8 Macro'
+  },
+  {
+    id: '5',
+    title: 'Maternity Session',
+    category: 'portrait',
+    image: 'https://images.pexels.com/photos/33109/fall-autumn-red-season.jpg?auto=compress&cs=tinysrgb&w=800',
+    description: 'Beautiful maternity portraits in natural setting',
+    tags: ['maternity', 'portrait', 'natural', 'outdoor'],
+    client: 'The Johnson Family',
+    location: 'Central Park, NYC',
+    camera: 'Nikon D850',
+    lens: '85mm f/1.4'
+  },
+  {
+    id: '6',
+    title: 'Engagement Photos',
+    category: 'wedding',
+    image: 'https://images.pexels.com/photos/466685/pexels-photo-466685.jpeg?auto=compress&cs=tinysrgb&w=800',
+    description: 'Romantic engagement session at sunset',
+    tags: ['engagement', 'couple', 'sunset', 'romantic'],
+    client: 'Emma & David',
+    location: 'Golden Gate Bridge, SF',
+    camera: 'Sony A7 III',
+    lens: '24-70mm f/2.8'
+  }
+];
 
 const ImageGallery: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -11,81 +86,6 @@ const ImageGallery: React.FC = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showFilters, setShowFilters] = useState(false);
   const { ref, inView } = useInView(0.1);
-
-  const galleryItems: GalleryItem[] = [
-    {
-      id: '1',
-      title: 'Sarah & Michael Wedding',
-      category: 'wedding',
-      image: 'https://images.pexels.com/photos/1024993/pexels-photo-1024993.jpeg?auto=compress&cs=tinysrgb&w=800',
-      description: 'Romantic outdoor ceremony captured in golden hour light',
-      tags: ['wedding', 'outdoor', 'golden hour', 'romantic'],
-      client: 'Sarah & Michael',
-      location: 'Napa Valley, CA',
-      camera: 'Canon EOS R5',
-      lens: '85mm f/1.4'
-    },
-    {
-      id: '2',
-      title: 'Corporate Headshots',
-      category: 'portrait',
-      image: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=800',
-      description: 'Professional executive portraits for tech startup',
-      tags: ['portrait', 'corporate', 'professional', 'headshot'],
-      client: 'TechCorp Inc.',
-      location: 'San Francisco, CA',
-      camera: 'Sony A7R IV',
-      lens: '70-200mm f/2.8'
-    },
-    {
-      id: '3',
-      title: 'Fashion Editorial',
-      category: 'fashion',
-      image: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=800',
-      description: 'High-fashion editorial shoot for luxury brand',
-      tags: ['fashion', 'editorial', 'luxury', 'studio'],
-      client: 'Vogue Magazine',
-      location: 'Los Angeles, CA',
-      camera: 'Hasselblad X1D',
-      lens: '90mm f/3.2'
-    },
-    {
-      id: '4',
-      title: 'Product Photography',
-      category: 'commercial',
-      image: 'https://images.pexels.com/photos/577585/pexels-photo-577585.jpeg?auto=compress&cs=tinysrgb&w=800',
-      description: 'Luxury watch collection for e-commerce catalog',
-      tags: ['product', 'commercial', 'luxury', 'catalog'],
-      client: 'Timepiece Co.',
-      location: 'Studio, NYC',
-      camera: 'Canon EOS R5',
-      lens: '100mm f/2.8 Macro'
-    },
-    {
-      id: '5',
-      title: 'Maternity Session',
-      category: 'portrait',
-      image: 'https://images.pexels.com/photos/33109/fall-autumn-red-season.jpg?auto=compress&cs=tinysrgb&w=800',
-      description: 'Beautiful maternity portraits in natural setting',
-      tags: ['maternity', 'portrait', 'natural', 'outdoor'],
-      client: 'The Johnson Family',
-      location: 'Central Park, NYC',
-      camera: 'Nikon D850',
-      lens: '85mm f/1.4'
-    },
-    {
-      id: '6',
-      title: 'Engagement Photos',
-      category: 'wedding',
-      image: 'https://images.pexels.com/photos/466685/pexels-photo-466685.jpeg?auto=compress&cs=tinysrgb&w=800',
-      description: 'Romantic engagement session at sunset',
-      tags: ['engagement', 'couple', 'sunset', 'romantic'],
-      client: 'Emma & David',
-      location: 'Golden Gate Bridge, SF',
-      camera: 'Sony A7 III',
-      lens: '24-70mm f/2.8'
-    }
-  ];
 
   const categories = ['all', ...Array.from(new Set(galleryItems.map(item => item.category)))];
 
@@ -97,7 +97,7 @@ const ImageGallery: React.FC = () => {
       const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
       return matchesSearch && matchesCategory;
     });
-  }, [searchTerm, selectedCategory, galleryItems]);
+  }, [searchTerm, selectedCategory]);
 
   return (
     <section id="gallery" className="py-20 bg-gray-50 dark:bg-gray-900">
