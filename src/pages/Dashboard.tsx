@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
 export default function Dashboard() {
@@ -37,8 +38,17 @@ export default function Dashboard() {
           <p className="text-sm uppercase tracking-[0.3em] text-amber-300/80">Week 1 Shell</p>
           <h2 className="mt-3 text-3xl font-bold">Protected dashboard access is working.</h2>
           <p className="mt-4 max-w-2xl text-white/70">
-            This shell confirms the photographer auth flow for FrameCraft SaaS v2. No gallery features are implemented yet.
+            This shell confirms the photographer auth flow for FrameCraft SaaS v2. Week 2 galleries are now behind the protected route.
           </p>
+
+          <div className="mt-6">
+            <Link
+              to="/galleries"
+              className="inline-flex items-center rounded-xl bg-amber-500 px-5 py-3 font-semibold text-gray-950 transition hover:bg-amber-400"
+            >
+              Open Galleries
+            </Link>
+          </div>
         </div>
       </section>
     </main>
