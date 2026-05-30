@@ -137,12 +137,14 @@ const ImageGallery: React.FC = () => {
               <div className="flex border border-gray-300 dark:border-gray-600 rounded-xl overflow-hidden">
                 <RippleButton
                   onClick={() => setViewMode('grid')}
+                  aria-label="View gallery as grid"
                   className={`p-3 ${viewMode === 'grid' ? 'bg-amber-600 text-white' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300'} transition-colors duration-200`}
                 >
                   <Grid className="w-5 h-5" />
                 </RippleButton>
                 <RippleButton
                   onClick={() => setViewMode('list')}
+                  aria-label="View gallery as list"
                   className={`p-3 ${viewMode === 'list' ? 'bg-amber-600 text-white' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300'} transition-colors duration-200`}
                 >
                   <List className="w-5 h-5" />

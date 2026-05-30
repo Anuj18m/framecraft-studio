@@ -74,10 +74,10 @@ const ImageCard: React.FC<ImageCardProps> = ({ item, index, viewMode }) => {
                 {item.category}
               </span>
               <div className="flex items-center space-x-2">
-                <RippleButton className="p-2 text-gray-400 hover:text-red-500 transition-colors duration-200">
+                <RippleButton className="p-2 text-gray-400 hover:text-red-500 transition-colors duration-200" aria-label="Like image">
                   <Heart className="w-4 h-4" />
                 </RippleButton>
-                <RippleButton className="p-2 text-gray-400 hover:text-indigo-500 transition-colors duration-200">
+                <RippleButton className="p-2 text-gray-400 hover:text-indigo-500 transition-colors duration-200" aria-label="Share image">
                   <Share2 className="w-4 h-4" />
                 </RippleButton>
               </div>
@@ -147,7 +147,7 @@ const ImageCard: React.FC<ImageCardProps> = ({ item, index, viewMode }) => {
           isHovered ? 'opacity-100' : 'opacity-0'
         }`}>
           <div className="text-center text-white">
-            <RippleButton className="mb-4 p-3 bg-white/20 rounded-full backdrop-blur-sm hover:bg-white/30 transition-colors duration-200">
+            <RippleButton className="mb-4 p-3 bg-white/20 rounded-full backdrop-blur-sm hover:bg-white/30 transition-colors duration-200" aria-label="View image">
               <Eye className="w-6 h-6" />
             </RippleButton>
             <h3 className="text-lg font-semibold mb-2">{item.title}</h3>
@@ -169,10 +169,10 @@ const ImageCard: React.FC<ImageCardProps> = ({ item, index, viewMode }) => {
         <div className={`absolute top-4 right-4 flex space-x-2 transition-all duration-300 ${
           isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'
         }`}>
-          <RippleButton className="p-2 bg-white/20 rounded-full backdrop-blur-sm text-white hover:bg-white/30 transition-colors duration-200">
+          <RippleButton className="p-2 bg-white/20 rounded-full backdrop-blur-sm text-white hover:bg-white/30 transition-colors duration-200" aria-label="Like image">
             <Heart className="w-4 h-4" />
           </RippleButton>
-          <RippleButton className="p-2 bg-white/20 rounded-full backdrop-blur-sm text-white hover:bg-white/30 transition-colors duration-200">
+          <RippleButton className="p-2 bg-white/20 rounded-full backdrop-blur-sm text-white hover:bg-white/30 transition-colors duration-200" aria-label="Share image">
             <Share2 className="w-4 h-4" />
           </RippleButton>
         </div>
