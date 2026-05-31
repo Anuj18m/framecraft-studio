@@ -48,6 +48,13 @@ export default function Dashboard() {
             >
               Open Galleries
             </Link>
+
+            <Link
+              to="/analytics"
+              className="ml-3 inline-flex items-center rounded-xl border border-white/10 bg-white/5 px-5 py-3 font-semibold text-white transition hover:bg-white/10"
+            >
+              View Analytics
+            </Link>
           </div>
         </div>
       </section>

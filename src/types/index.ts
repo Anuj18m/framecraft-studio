@@ -48,3 +48,5 @@ export interface RipplePosition {
   y: number;
   timestamp: number;
 }
+
+export * from './share';

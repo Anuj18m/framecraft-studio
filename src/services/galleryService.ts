@@ -105,3 +105,24 @@ export async function deleteGallery(id: string): Promise<ServiceResult<boolean>>
 
   return { data: true, error: null };
 }
+
+export async function getGalleryById(id: string): Promise<ServiceResult<Gallery>> {
+  const { userId, error: userError } = await getAuthenticatedUserId();
+
+  if (userError || !userId) {
+    return { data: null, error: userError };
+  }
+
+  const { data, error } = await supabase
+    .from('galleries')
+    .select('*')
+    .eq('id', id)
+    .eq('photographer_id', userId)
+    .single();
+
+  if (error) {
+    return { data: null, error: { message: error.message } };
+  }
+
+  return { data: data as Gallery, error: null };
+}
