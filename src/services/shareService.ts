@@ -1,3 +1,4 @@
+import { createClient } from '@supabase/supabase-js';
 import { getGalleryById } from './galleryService';
 import { supabase } from './supabase';
 import type { GalleryShare, PublicPhoto, ResolvedGallery } from '../types/share';
@@ -12,6 +13,27 @@ interface ServiceResult<T> {
 }
 
 const BUCKET_NAME = 'gallery-images';
+const CLIENT_IDENTIFIER_HEADER = 'x-client-identifier';
+
+function createPublicClient(clientIdentifier?: string) {
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+  const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+  return createClient(supabaseUrl, supabaseAnonKey, {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+    },
+    global: clientIdentifier
+      ? {
+          headers: {
+            [CLIENT_IDENTIFIER_HEADER]: clientIdentifier,
+          },
+        }
+      : undefined,
+  });
+}
 
 function generateShareToken() {
   return globalThis.crypto?.randomUUID?.().replaceAll('-', '') ?? `${Date.now()}-${Math.random().toString(16).slice(2)}`;
@@ -193,6 +215,26 @@ export async function recordPhotoDownload(
     p_photo_id: photoId,
     p_gallery_id: galleryId,
     p_ip_address: ipAddress ?? null,
+  });
+
+  if (error) {
+    return { data: null, error: { message: error.message } };
+  }
+
+  return { data: true, error: null };
+}
+
+export async function recordGalleryDownload(
+  galleryShareId: string,
+  photoCount: number,
+  clientIdentifier: string,
+): Promise<ServiceResult<boolean>> {
+  const client = createPublicClient(clientIdentifier);
+
+  const { error } = await client.from('gallery_download_events').insert({
+    gallery_share_id: galleryShareId,
+    photo_count: photoCount,
+    client_identifier: clientIdentifier,
   });
 
   if (error) {

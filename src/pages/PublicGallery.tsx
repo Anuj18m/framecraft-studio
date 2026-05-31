@@ -1,10 +1,17 @@
+import JSZip from 'jszip';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { recordGalleryView, recordPhotoDownload, resolveGalleryByToken } from '../services/shareService';
+import { recordGalleryDownload, recordGalleryView, recordPhotoDownload, resolveGalleryByToken } from '../services/shareService';
 import { getProfile } from '../services/profileService';
 import { addFavorite, getClientFavorites, getFavoriteCount, removeFavorite } from '../services/favoritesService';
 import type { ResolvedGallery } from '../types/share';
 import type { PhotographerProfile } from '../types/profile';
+
+function sanitizeFileName(value: string) {
+  const cleaned = value.replace(/[^a-z0-9._-]+/gi, '_').replace(/^_+|_+$/g, '');
+
+  return cleaned || 'gallery';
+}
 
 export default function PublicGallery() {
   const { token } = useParams();
@@ -17,6 +24,7 @@ export default function PublicGallery() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [downloadingId, setDownloadingId] = useState('');
+  const [downloadingGallery, setDownloadingGallery] = useState(false);
   const [favoriteWorkingId, setFavoriteWorkingId] = useState('');
 
   const accentColor = profile?.primary_color || '#2563eb';
@@ -134,6 +142,58 @@ export default function PublicGallery() {
     setDownloadingId('');
   };
 
+  const handleDownloadEntireGallery = async () => {
+    if (!resolved || resolved.photos.length === 0) {
+      return;
+    }
+
+    setDownloadingGallery(true);
+    setError('');
+
+    try {
+      const zip = new JSZip();
+      let downloadedPhotoCount = 0;
+
+      for (const [index, photo] of resolved.photos.entries()) {
+        const response = await fetch(photo.publicUrl);
+
+        if (!response.ok) {
+          continue;
+        }
+
+        const blob = await response.blob();
+        const entryName = `${String(index + 1).padStart(3, '0')}-${sanitizeFileName(photo.file_name || photo.id)}`;
+
+        zip.file(entryName, blob);
+        downloadedPhotoCount += 1;
+      }
+
+      if (downloadedPhotoCount === 0) {
+        setError('Unable to prepare the gallery ZIP.');
+        return;
+      }
+
+      const content = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE' });
+      const { error: downloadEventError } = await recordGalleryDownload(resolved.share.id, downloadedPhotoCount, getClientIdentifier());
+
+      if (downloadEventError) {
+        setError(downloadEventError.message);
+      }
+
+      const objectUrl = URL.createObjectURL(content);
+      const anchor = document.createElement('a');
+      anchor.href = objectUrl;
+      anchor.download = `${sanitizeFileName(resolved.gallery.title || 'gallery')}.zip`;
+      anchor.rel = 'noreferrer';
+      anchor.click();
+      window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+    } catch {
+      setError('Unable to prepare the gallery ZIP.');
+    } finally {
+      setDownloadingGallery(false);
+    }
+  };
+
   const handleFavoriteToggle = async (photoId: string) => {
     if (!resolved) {
       return;
@@ -219,11 +279,22 @@ export default function PublicGallery() {
       </header>
 
       <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
-        <div className="mb-6 flex items-center justify-between gap-4">
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
           <p className="text-sm text-white/60">{resolved.photos.length} photos ready for download</p>
-          <span className="rounded-full border px-3 py-1 text-xs uppercase tracking-[0.2em]" style={{ borderColor: `${accentColor}55`, color: accentColor, backgroundColor: `${accentColor}10` }}>
-            Client View
-          </span>
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="rounded-full border px-3 py-1 text-xs uppercase tracking-[0.2em]" style={{ borderColor: `${accentColor}55`, color: accentColor, backgroundColor: `${accentColor}10` }}>
+              Client View
+            </span>
+            <button
+              type="button"
+              onClick={() => void handleDownloadEntireGallery()}
+              disabled={downloadingGallery || resolved.photos.length === 0}
+              className="rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-white transition disabled:cursor-not-allowed disabled:opacity-70"
+              style={{ backgroundColor: accentColor }}
+            >
+              {downloadingGallery ? 'Preparing Gallery ZIP...' : 'Download Entire Gallery'}
+            </button>
+          </div>
         </div>
 
         {error ? (

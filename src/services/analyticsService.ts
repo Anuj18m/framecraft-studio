@@ -35,11 +35,12 @@ export interface GalleryAnalytics extends GalleryBaseMetrics {
 
 export interface RecentActivityItem {
   id: string;
-  type: 'view' | 'download';
+  type: 'view' | 'download' | 'gallery-download';
   galleryId: string;
   galleryTitle: string;
   photoId?: string;
   photoName?: string;
+  photoCount?: number;
   occurredAt: string;
 }
 
@@ -62,6 +63,13 @@ type DownloadRow = {
   ip_address: string | null;
 };
 
+type GalleryDownloadRow = {
+  id: string;
+  downloaded_at: string;
+  photo_count: number;
+  gallery_share: { gallery_id: string } | null;
+};
+
 async function getAuthenticatedUserId() {
   const { data, error } = await supabase.auth.getUser();
 
@@ -78,7 +86,7 @@ async function getAuthenticatedUserId() {
   return { userId, error: null };
 }
 
-function buildGalleryMetrics(galleries: GalleryRow[], photos: PhotoRow[], views: ViewRow[], downloads: DownloadRow[]) {
+function buildGalleryMetrics(galleries: GalleryRow[], photos: PhotoRow[], views: ViewRow[], downloads: DownloadRow[], galleryDownloads: GalleryDownloadRow[]) {
   const photoCounts = new Map<string, number>();
   const viewCounts = new Map<string, number>();
   const downloadCounts = new Map<string, number>();
@@ -93,6 +101,16 @@ function buildGalleryMetrics(galleries: GalleryRow[], photos: PhotoRow[], views:
 
   for (const download of downloads) {
     downloadCounts.set(download.gallery_id, (downloadCounts.get(download.gallery_id) ?? 0) + 1);
+  }
+
+  for (const download of galleryDownloads) {
+    const galleryId = download.gallery_share?.gallery_id;
+
+    if (!galleryId) {
+      continue;
+    }
+
+    downloadCounts.set(galleryId, (downloadCounts.get(galleryId) ?? 0) + 1);
   }
 
   return galleries.map((gallery) => ({
@@ -139,6 +157,24 @@ function mergeRecentActivity(galleries: GalleryRow[], photos: PhotoRow[], views:
   );
 }
 
+function mapGalleryDownloadsToActivity(galleries: GalleryRow[], galleryDownloads: GalleryDownloadRow[]) {
+  const galleryMap = new Map(galleries.map((gallery) => [gallery.id, gallery] as const));
+
+  return galleryDownloads.map((download) => {
+    const galleryId = download.gallery_share?.gallery_id ?? '';
+    const gallery = galleryMap.get(galleryId);
+
+    return {
+      id: download.id,
+      type: 'gallery-download' as const,
+      galleryId,
+      galleryTitle: gallery?.title ?? 'Unknown gallery',
+      photoCount: download.photo_count,
+      occurredAt: download.downloaded_at,
+    } satisfies RecentActivityItem;
+  });
+}
+
 export async function getDashboardAnalytics(): Promise<ServiceResult<DashboardAnalytics>> {
   const { userId, error: userError } = await getAuthenticatedUserId();
 
@@ -159,7 +195,7 @@ export async function getDashboardAnalytics(): Promise<ServiceResult<DashboardAn
   const galleries = (galleriesData ?? []) as GalleryRow[];
   const galleryIds = galleries.map((gallery) => gallery.id);
 
-  const [{ data: photosData, error: photosError }, { data: viewsData, error: viewsError }, { data: downloadsData, error: downloadsError }] =
+  const [{ data: photosData, error: photosError }, { data: viewsData, error: viewsError }, { data: downloadsData, error: downloadsError }, { data: galleryDownloadsData, error: galleryDownloadsError }] =
     await Promise.all([
       supabase.from('photos').select('id,gallery_id,file_name,created_at,photographer_id,file_path').eq('photographer_id', userId),
       galleryIds.length > 0
@@ -167,6 +203,9 @@ export async function getDashboardAnalytics(): Promise<ServiceResult<DashboardAn
         : Promise.resolve({ data: [], error: null }),
       galleryIds.length > 0
         ? supabase.from('photo_download_events').select('id,gallery_id,photo_id,downloaded_at,ip_address').in('gallery_id', galleryIds)
+        : Promise.resolve({ data: [], error: null }),
+      galleryIds.length > 0
+        ? supabase.from('gallery_download_events').select('id,downloaded_at,photo_count,gallery_share:gallery_shares(gallery_id)').order('downloaded_at', { ascending: false })
         : Promise.resolve({ data: [], error: null }),
     ]);
 
@@ -182,18 +221,23 @@ export async function getDashboardAnalytics(): Promise<ServiceResult<DashboardAn
     return { data: null, error: { message: downloadsError.message } };
   }
 
+  if (galleryDownloadsError) {
+    return { data: null, error: { message: galleryDownloadsError.message } };
+  }
+
   const photos = (photosData ?? []) as PhotoRow[];
   const views = (viewsData ?? []) as ViewRow[];
   const downloads = (downloadsData ?? []) as DownloadRow[];
+  const galleryDownloads = (galleryDownloadsData ?? []) as GalleryDownloadRow[];
 
-  const galleryMetrics = buildGalleryMetrics(galleries, photos, views, downloads);
+  const galleryMetrics = buildGalleryMetrics(galleries, photos, views, downloads, galleryDownloads);
 
   return {
     data: {
       totalGalleries: galleries.length,
       totalPhotos: photos.length,
       totalViews: views.length,
-      totalDownloads: downloads.length,
+      totalDownloads: downloads.length + galleryDownloads.length,
       galleryMetrics,
     },
     error: null,
@@ -213,11 +257,12 @@ export async function getGalleryAnalytics(galleryId: string): Promise<ServiceRes
     return { data: null, error: galleryError };
   }
 
-  const [{ data: photosData, error: photosError }, { data: viewsData, error: viewsError }, { data: downloadsData, error: downloadsError }] =
+  const [{ data: photosData, error: photosError }, { data: viewsData, error: viewsError }, { data: downloadsData, error: downloadsError }, { data: galleryDownloadsData, error: galleryDownloadsError }] =
     await Promise.all([
       supabase.from('photos').select('id,gallery_id,file_name,created_at,photographer_id,file_path').eq('gallery_id', galleryId),
       supabase.from('gallery_view_events').select('id,gallery_id,viewed_at,ip_address').eq('gallery_id', galleryId),
       supabase.from('photo_download_events').select('id,gallery_id,photo_id,downloaded_at,ip_address').eq('gallery_id', galleryId),
+      supabase.from('gallery_download_events').select('id,downloaded_at,photo_count,gallery_share:gallery_shares(gallery_id)').order('downloaded_at', { ascending: false }),
     ]);
 
   if (photosError) {
@@ -232,16 +277,22 @@ export async function getGalleryAnalytics(galleryId: string): Promise<ServiceRes
     return { data: null, error: { message: downloadsError.message } };
   }
 
+  if (galleryDownloadsError) {
+    return { data: null, error: { message: galleryDownloadsError.message } };
+  }
+
   const photos = (photosData ?? []) as PhotoRow[];
   const views = (viewsData ?? []) as ViewRow[];
   const downloads = (downloadsData ?? []) as DownloadRow[];
+  const galleryDownloads = (galleryDownloadsData ?? []) as GalleryDownloadRow[];
+  const galleryDownloadsForGallery = galleryDownloads.filter((download) => download.gallery_share?.gallery_id === galleryId);
 
   return {
     data: {
       gallery: gallery as Gallery,
       photoCount: photos.length,
       viewCount: views.length,
-      downloadCount: downloads.length,
+      downloadCount: downloads.length + galleryDownloadsForGallery.length,
       recentViews: views.slice(0, 10),
       recentDownloads: downloads.slice(0, 10),
     },
@@ -272,11 +323,12 @@ export async function getRecentActivity(): Promise<ServiceResult<RecentActivityI
     return { data: [], error: null };
   }
 
-  const [{ data: photosData, error: photosError }, { data: viewsData, error: viewsError }, { data: downloadsData, error: downloadsError }] =
+  const [{ data: photosData, error: photosError }, { data: viewsData, error: viewsError }, { data: downloadsData, error: downloadsError }, { data: galleryDownloadsData, error: galleryDownloadsError }] =
     await Promise.all([
       supabase.from('photos').select('id,gallery_id,file_name,created_at,photographer_id,file_path').eq('photographer_id', userId),
       supabase.from('gallery_view_events').select('id,gallery_id,viewed_at,ip_address').in('gallery_id', galleryIds).order('viewed_at', { ascending: false }).limit(10),
       supabase.from('photo_download_events').select('id,gallery_id,photo_id,downloaded_at,ip_address').in('gallery_id', galleryIds).order('downloaded_at', { ascending: false }).limit(10),
+      supabase.from('gallery_download_events').select('id,downloaded_at,photo_count,gallery_share:gallery_shares(gallery_id)').order('downloaded_at', { ascending: false }).limit(10),
     ]);
 
   if (photosError) {
@@ -291,8 +343,17 @@ export async function getRecentActivity(): Promise<ServiceResult<RecentActivityI
     return { data: null, error: { message: downloadsError.message } };
   }
 
+  if (galleryDownloadsError) {
+    return { data: null, error: { message: galleryDownloadsError.message } };
+  }
+
+  const recentActivity = mergeRecentActivity(galleries, (photosData ?? []) as PhotoRow[], (viewsData ?? []) as ViewRow[], (downloadsData ?? []) as DownloadRow[]);
+  const galleryDownloadActivity = mapGalleryDownloadsToActivity(galleries, (galleryDownloadsData ?? []) as GalleryDownloadRow[]);
+
   return {
-    data: mergeRecentActivity(galleries, (photosData ?? []) as PhotoRow[], (viewsData ?? []) as ViewRow[], (downloadsData ?? []) as DownloadRow[]).slice(0, 10),
+    data: [...recentActivity, ...galleryDownloadActivity]
+      .sort((left, right) => new Date(right.occurredAt).getTime() - new Date(left.occurredAt).getTime())
+      .slice(0, 10),
     error: null,
   };
 }
