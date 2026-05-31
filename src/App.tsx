@@ -9,6 +9,7 @@ import GalleryShare from './pages/GalleryShare';
 import Analytics from './pages/Analytics';
 import PublicGallery from './pages/PublicGallery';
 import Settings from './pages/Settings';
+import Favorites from './pages/Favorites';
 
 function App() {
   return (
@@ -62,6 +63,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Settings />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/favorites"
+            element={
+              <ProtectedRoute>
+                <Favorites />
               </ProtectedRoute>
             }
           />

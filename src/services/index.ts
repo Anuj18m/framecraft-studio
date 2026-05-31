@@ -4,3 +4,4 @@ export * from './analyticsService';
 export * from './shareService';
 export * from './photoService';
 export * from './profileService';
+export * from './favoritesService';

@@ -51,3 +51,4 @@ export interface RipplePosition {
 
 export * from './share';
 export * from './profile';
+export * from './favorite';

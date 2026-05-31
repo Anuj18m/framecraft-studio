@@ -2,21 +2,67 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { recordGalleryView, recordPhotoDownload, resolveGalleryByToken } from '../services/shareService';
 import { getProfile } from '../services/profileService';
+import { addFavorite, getClientFavorites, getFavoriteCount, removeFavorite } from '../services/favoritesService';
 import type { ResolvedGallery } from '../types/share';
 import type { PhotographerProfile } from '../types/profile';
 
 export default function PublicGallery() {
   const { token } = useParams();
   const hasTrackedView = useRef(false);
+  const clientIdentifierRef = useRef('');
   const [resolved, setResolved] = useState<ResolvedGallery | null>(null);
   const [profile, setProfile] = useState<PhotographerProfile | null>(null);
+  const [favoriteCounts, setFavoriteCounts] = useState<Record<string, number>>({});
+  const [clientFavoriteIds, setClientFavoriteIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [downloadingId, setDownloadingId] = useState('');
+  const [favoriteWorkingId, setFavoriteWorkingId] = useState('');
 
   const accentColor = profile?.primary_color || '#2563eb';
   const businessName = profile?.business_name?.trim() || 'FrameCraft Studio';
   const logoUrl = profile?.logo_url || '';
+
+  const getClientIdentifier = useCallback(() => {
+    if (clientIdentifierRef.current) {
+      return clientIdentifierRef.current;
+    }
+
+    const storageKey = 'framecraft-client-identifier';
+
+    try {
+      const existingIdentifier = window.localStorage.getItem(storageKey);
+
+      if (existingIdentifier) {
+        clientIdentifierRef.current = existingIdentifier;
+        return existingIdentifier;
+      }
+
+      const generatedIdentifier = globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+      window.localStorage.setItem(storageKey, generatedIdentifier);
+      clientIdentifierRef.current = generatedIdentifier;
+      return generatedIdentifier;
+    } catch {
+      const fallbackIdentifier = globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+      clientIdentifierRef.current = fallbackIdentifier;
+      return fallbackIdentifier;
+    }
+  }, []);
+
+  const loadFavoriteState = useCallback(async (galleryShareId: string, photoIds: string[]) => {
+    const clientIdentifier = getClientIdentifier();
+
+    const [{ data: clientFavoritesData }, countsData] = await Promise.all([
+      getClientFavorites(galleryShareId, clientIdentifier),
+      Promise.all(photoIds.map(async (photoId) => {
+        const { data } = await getFavoriteCount(galleryShareId, photoId);
+        return [photoId, data ?? 0] as const;
+      })),
+    ]);
+
+    setClientFavoriteIds((clientFavoritesData ?? []).map((favorite) => favorite.photo_id));
+    setFavoriteCounts(Object.fromEntries(countsData));
+  }, [getClientIdentifier]);
 
   const loadGallery = useCallback(async () => {
     if (!token) {
@@ -42,13 +88,15 @@ export default function PublicGallery() {
     const { data: profileData } = await getProfile(data.gallery.photographer_id);
     setProfile(profileData);
 
+    await loadFavoriteState(data.share.id, data.photos.map((photo) => photo.id));
+
     setLoading(false);
 
     if (!hasTrackedView.current) {
       hasTrackedView.current = true;
       void recordGalleryView(data.gallery.id);
     }
-  }, [token]);
+  }, [loadFavoriteState, token]);
 
   useEffect(() => {
     void loadGallery();
@@ -84,6 +132,40 @@ export default function PublicGallery() {
     }
 
     setDownloadingId('');
+  };
+
+  const handleFavoriteToggle = async (photoId: string) => {
+    if (!resolved) {
+      return;
+    }
+
+    const clientIdentifier = getClientIdentifier();
+    setFavoriteWorkingId(photoId);
+
+    const isFavorited = clientFavoriteIds.includes(photoId);
+    const action = isFavorited
+      ? removeFavorite(resolved.share.id, photoId, clientIdentifier)
+      : addFavorite(resolved.share.id, photoId, clientIdentifier);
+
+    const { error: favoriteError } = await action;
+
+    if (favoriteError) {
+      setError(favoriteError.message);
+      setFavoriteWorkingId('');
+      return;
+    }
+
+    const [{ data: clientFavoritesData }, countsData] = await Promise.all([
+      getClientFavorites(resolved.share.id, clientIdentifier),
+      Promise.all(resolved.photos.map(async (photo) => {
+        const { data } = await getFavoriteCount(resolved.share.id, photo.id);
+        return [photo.id, data ?? 0] as const;
+      })),
+    ]);
+
+    setClientFavoriteIds((clientFavoritesData ?? []).map((favorite) => favorite.photo_id));
+    setFavoriteCounts(Object.fromEntries(countsData));
+    setFavoriteWorkingId('');
   };
 
   if (loading) {
@@ -164,6 +246,23 @@ export default function PublicGallery() {
                 <div>
                   <h2 className="text-sm font-semibold text-white">{photo.file_name}</h2>
                   <p className="mt-1 text-xs text-white/55">Uploaded {new Date(photo.created_at).toLocaleString()}</p>
+                </div>
+
+                <div className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm">
+                  <span className="text-white/70">{favoriteCounts[photo.id] ?? 0} favorites</span>
+                  <button
+                    type="button"
+                    onClick={() => void handleFavoriteToggle(photo.id)}
+                    disabled={favoriteWorkingId === photo.id}
+                    className="rounded-lg px-3 py-1.5 text-sm font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-70"
+                    style={{ backgroundColor: clientFavoriteIds.includes(photo.id) ? '#7c3aed' : accentColor }}
+                  >
+                    {favoriteWorkingId === photo.id
+                      ? 'Saving...'
+                      : clientFavoriteIds.includes(photo.id)
+                        ? 'Unfavorite'
+                        : 'Favorite'}
+                  </button>
                 </div>
 
                 <button
