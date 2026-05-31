@@ -8,6 +8,7 @@ import GalleryDetails from './pages/GalleryDetails';
 import GalleryShare from './pages/GalleryShare';
 import Analytics from './pages/Analytics';
 import PublicGallery from './pages/PublicGallery';
+import Settings from './pages/Settings';
 
 function App() {
   return (
@@ -53,6 +54,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Analytics />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <ProtectedRoute>
+                <Settings />
               </ProtectedRoute>
             }
           />

@@ -50,3 +50,4 @@ export interface RipplePosition {
 }
 
 export * from './share';
+export * from './profile';
