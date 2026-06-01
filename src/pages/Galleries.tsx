@@ -95,7 +95,7 @@ export default function Galleries() {
   return (
     <main className="min-h-screen bg-gray-950 text-white">
       <header className="border-b border-white/10 bg-white/5 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
           <div>
             <p className="text-xs uppercase tracking-[0.3em] text-amber-300/80">FrameCraft SaaS</p>
             <h1 className="mt-1 text-xl font-semibold">Galleries</h1>
@@ -103,7 +103,7 @@ export default function Galleries() {
 
           <Link
             to="/dashboard"
-            className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/10"
+            className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-center text-sm font-medium text-white transition hover:bg-white/10 sm:w-auto"
           >
             Back to Dashboard
           </Link>
@@ -160,12 +160,12 @@ export default function Galleries() {
                   <div className="flex flex-wrap items-start justify-between gap-4">
                     <div>
                       <div className="flex items-center gap-3">
-                        <h3 className="text-lg font-semibold">{gallery.title}</h3>
+                        <h3 className="min-w-0 break-words text-lg font-semibold">{gallery.title}</h3>
                         <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs uppercase tracking-[0.2em] text-white/70">
                           {gallery.status}
                         </span>
                       </div>
-                      <p className="mt-2 max-w-xl text-sm text-white/65">
+                      <p className="mt-2 max-w-xl break-words text-sm text-white/65">
                         {gallery.description || 'No description provided.'}
                       </p>
                     </div>
@@ -173,21 +173,21 @@ export default function Galleries() {
                     <div className="flex flex-wrap gap-2">
                       <Link
                         to={`/galleries/${gallery.id}`}
-                        className="rounded-xl border border-emerald-400/20 bg-emerald-500/10 px-4 py-2 text-sm font-medium text-emerald-100 transition hover:bg-emerald-500/20"
+                        className="w-full rounded-xl border border-emerald-400/20 bg-emerald-500/10 px-4 py-2 text-center text-sm font-medium text-emerald-100 transition hover:bg-emerald-500/20 sm:w-auto"
                       >
                         View Photos
                       </Link>
                       <button
                         type="button"
                         onClick={() => setSelectedGallery(gallery)}
-                        className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/10"
+                        className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/10 sm:w-auto"
                       >
                         Edit
                       </button>
                       <button
                         type="button"
                         onClick={() => void handleDelete(gallery.id)}
-                        className="rounded-xl border border-red-400/20 bg-red-500/10 px-4 py-2 text-sm font-medium text-red-100 transition hover:bg-red-500/20"
+                        className="w-full rounded-xl border border-red-400/20 bg-red-500/10 px-4 py-2 text-sm font-medium text-red-100 transition hover:bg-red-500/20 sm:w-auto"
                       >
                         Delete
                       </button>

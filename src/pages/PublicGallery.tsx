@@ -255,8 +255,8 @@ export default function PublicGallery() {
   return (
     <main className="min-h-screen bg-gray-950 text-white">
       <header className="border-b bg-white/5 backdrop-blur" style={{ borderColor: `${accentColor}33` }}>
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-6 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-4">
+        <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-6 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:px-6 lg:px-8">
+          <div className="flex min-w-0 items-center gap-4">
             <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-black/20">
               {logoUrl ? (
                 <img src={logoUrl} alt={`${businessName} logo`} className="h-full w-full object-cover" />
@@ -268,18 +268,18 @@ export default function PublicGallery() {
               <p className="text-xs uppercase tracking-[0.3em]" style={{ color: accentColor }}>
                 {businessName}
               </p>
-              <h1 className="mt-2 text-3xl font-semibold">{resolved.gallery.title}</h1>
+              <h1 className="mt-2 break-words text-2xl font-semibold sm:text-3xl">{resolved.gallery.title}</h1>
             </div>
           </div>
 
-          <span className="rounded-full border px-3 py-1 text-xs uppercase tracking-[0.2em]" style={{ borderColor: `${accentColor}55`, color: accentColor }}>
+          <span className="w-full rounded-full border px-3 py-1 text-center text-xs uppercase tracking-[0.2em] sm:w-auto" style={{ borderColor: `${accentColor}55`, color: accentColor }}>
             Private client gallery
           </span>
         </div>
       </header>
 
       <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
           <p className="text-sm text-white/60">{resolved.photos.length} photos ready for download</p>
           <div className="flex flex-wrap items-center gap-3">
             <span className="rounded-full border px-3 py-1 text-xs uppercase tracking-[0.2em]" style={{ borderColor: `${accentColor}55`, color: accentColor, backgroundColor: `${accentColor}10` }}>
@@ -289,7 +289,7 @@ export default function PublicGallery() {
               type="button"
               onClick={() => void handleDownloadEntireGallery()}
               disabled={downloadingGallery || resolved.photos.length === 0}
-              className="rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-white transition disabled:cursor-not-allowed disabled:opacity-70"
+              className="w-full rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-white transition disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto"
               style={{ backgroundColor: accentColor }}
             >
               {downloadingGallery ? 'Preparing Gallery ZIP...' : 'Download Entire Gallery'}
@@ -315,17 +315,17 @@ export default function PublicGallery() {
               <img src={photo.publicUrl} alt={photo.file_name} className="h-64 w-full object-cover" />
               <div className="space-y-3 p-4">
                 <div>
-                  <h2 className="text-sm font-semibold text-white">{photo.file_name}</h2>
+                  <h2 className="break-words text-sm font-semibold text-white">{photo.file_name}</h2>
                   <p className="mt-1 text-xs text-white/55">Uploaded {new Date(photo.created_at).toLocaleString()}</p>
                 </div>
 
-                <div className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm">
+                <div className="flex flex-col gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm sm:flex-row sm:items-center sm:justify-between">
                   <span className="text-white/70">{favoriteCounts[photo.id] ?? 0} favorites</span>
                   <button
                     type="button"
                     onClick={() => void handleFavoriteToggle(photo.id)}
                     disabled={favoriteWorkingId === photo.id}
-                    className="rounded-lg px-3 py-1.5 text-sm font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-70"
+                    className="w-full rounded-lg px-3 py-1.5 text-sm font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto"
                     style={{ backgroundColor: clientFavoriteIds.includes(photo.id) ? '#7c3aed' : accentColor }}
                   >
                     {favoriteWorkingId === photo.id

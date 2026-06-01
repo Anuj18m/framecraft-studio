@@ -112,11 +112,11 @@ export default function GalleryForm({ gallery, loading = false, onCancel, onSubm
         </select>
       </div>
 
-      <div className="flex flex-wrap gap-3 pt-2">
+      <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:flex-wrap">
         <button
           type="submit"
           disabled={loading}
-          className="rounded-xl bg-amber-500 px-5 py-3 font-semibold text-gray-950 transition hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-70"
+          className="w-full rounded-xl bg-amber-500 px-5 py-3 font-semibold text-gray-950 transition hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto"
         >
           {loading ? 'Saving...' : gallery ? 'Update Gallery' : 'Create Gallery'}
         </button>
@@ -125,7 +125,7 @@ export default function GalleryForm({ gallery, loading = false, onCancel, onSubm
           <button
             type="button"
             onClick={onCancel}
-            className="rounded-xl border border-white/10 bg-white/5 px-5 py-3 font-medium text-white transition hover:bg-white/10"
+            className="w-full rounded-xl border border-white/10 bg-white/5 px-5 py-3 font-medium text-white transition hover:bg-white/10 sm:w-auto"
           >
             Cancel
           </button>

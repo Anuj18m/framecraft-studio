@@ -150,7 +150,7 @@ export default function GalleryDetails() {
   return (
     <main className="min-h-screen bg-gray-950 text-white">
       <header className="border-b border-white/10 bg-white/5 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:px-6 lg:px-8">
           <div>
             <p className="text-xs uppercase tracking-[0.3em] text-amber-300/80">FrameCraft SaaS</p>
             <h1 className="mt-1 text-xl font-semibold">Gallery Details</h1>
@@ -158,14 +158,14 @@ export default function GalleryDetails() {
 
           <Link
             to="/galleries"
-            className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/10"
+            className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-center text-sm font-medium text-white transition hover:bg-white/10 sm:w-auto"
           >
             Back to Galleries
           </Link>
 
           <Link
             to={`/galleries/${galleryId}/share`}
-            className="rounded-xl border border-amber-400/20 bg-amber-500/10 px-4 py-2 text-sm font-medium text-amber-100 transition hover:bg-amber-500/20"
+            className="w-full rounded-xl border border-amber-400/20 bg-amber-500/10 px-4 py-2 text-center text-sm font-medium text-amber-100 transition hover:bg-amber-500/20 sm:w-auto"
           >
             Share Gallery
           </Link>
@@ -208,7 +208,7 @@ export default function GalleryDetails() {
             {selectedFileSummary.length > 0 ? (
               <div className="rounded-2xl border border-white/10 bg-black/20 p-4 text-sm text-white/70">
                 <p className="mb-2 font-semibold text-white">Selected files</p>
-                <ul className="space-y-1">
+                <ul className="space-y-1 break-words">
                   {selectedFileSummary.map((fileName) => (
                     <li key={fileName}>{fileName}</li>
                   ))}
@@ -259,7 +259,7 @@ export default function GalleryDetails() {
                 <img src={photo.signedUrl} alt={photo.file_name} className="h-56 w-full object-cover" />
                 <div className="space-y-3 p-4">
                   <div>
-                    <h4 className="text-sm font-semibold text-white">{photo.file_name}</h4>
+                    <h4 className="break-words text-sm font-semibold text-white">{photo.file_name}</h4>
                     <p className="mt-1 text-xs text-white/55">Uploaded {new Date(photo.created_at).toLocaleString()}</p>
                   </div>
 
@@ -267,7 +267,7 @@ export default function GalleryDetails() {
                     type="button"
                     onClick={() => void handleDeletePhoto(photo.id, photo.file_path)}
                     disabled={deletingId === photo.id}
-                    className="rounded-xl border border-red-400/20 bg-red-500/10 px-4 py-2 text-sm font-medium text-red-100 transition hover:bg-red-500/20 disabled:cursor-not-allowed disabled:opacity-70"
+                    className="w-full rounded-xl border border-red-400/20 bg-red-500/10 px-4 py-2 text-sm font-medium text-red-100 transition hover:bg-red-500/20 disabled:cursor-not-allowed disabled:opacity-70"
                   >
                     {deletingId === photo.id ? 'Deleting...' : 'Delete Photo'}
                   </button>

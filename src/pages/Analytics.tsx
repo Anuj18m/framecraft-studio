@@ -64,7 +64,7 @@ export default function Analytics() {
   return (
     <main className="min-h-screen bg-gray-950 text-white">
       <header className="border-b border-white/10 bg-white/5 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
           <div>
             <p className="text-xs uppercase tracking-[0.3em] text-amber-300/80">FrameCraft SaaS</p>
             <h1 className="mt-1 text-xl font-semibold">Analytics</h1>
@@ -72,7 +72,7 @@ export default function Analytics() {
 
           <Link
             to="/dashboard"
-            className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/10"
+            className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-center text-sm font-medium text-white transition hover:bg-white/10 sm:w-auto"
           >
             Back to Dashboard
           </Link>
@@ -129,7 +129,7 @@ export default function Analytics() {
 
                     <Link
                       to={`/galleries/${item.gallery.id}/share`}
-                      className="rounded-xl border border-amber-400/20 bg-amber-500/10 px-4 py-2 text-sm font-medium text-amber-100 transition hover:bg-amber-500/20"
+                      className="w-full rounded-xl border border-amber-400/20 bg-amber-500/10 px-4 py-2 text-center text-sm font-medium text-amber-100 transition hover:bg-amber-500/20 sm:w-auto"
                     >
                       Open Share Page
                     </Link>

@@ -120,7 +120,7 @@ export default function Settings() {
   return (
     <main className="min-h-screen bg-gray-950 text-white">
       <header className="border-b border-white/10 bg-white/5 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
           <div>
             <p className="text-xs uppercase tracking-[0.3em] text-amber-300/80">FrameCraft SaaS</p>
             <h1 className="mt-1 text-xl font-semibold">Settings</h1>
@@ -128,7 +128,7 @@ export default function Settings() {
 
           <Link
             to="/dashboard"
-            className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/10"
+            className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-center text-sm font-medium text-white transition hover:bg-white/10 sm:w-auto"
           >
             Back to Dashboard
           </Link>
@@ -175,13 +175,13 @@ export default function Settings() {
             <label htmlFor="brand-color" className="text-sm font-medium text-white/80">
               Brand Color
             </label>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
               <input
                 id="brand-color"
                 type="color"
                 value={primaryColor}
                 onChange={(event) => setPrimaryColor(event.target.value)}
-                className="h-12 w-16 cursor-pointer rounded-xl border border-white/10 bg-black/20 p-1"
+                className="h-12 w-full cursor-pointer rounded-xl border border-white/10 bg-black/20 p-1 sm:w-16"
               />
               <input
                 type="text"
@@ -208,7 +208,7 @@ export default function Settings() {
           <button
             type="submit"
             disabled={saving}
-            className="rounded-xl px-5 py-3 font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-70"
+            className="w-full rounded-xl px-5 py-3 font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto"
             style={accentStyles}
           >
             {saving ? 'Saving...' : 'Save Settings'}
@@ -222,7 +222,7 @@ export default function Settings() {
           </div>
 
           <div className="mt-6 overflow-hidden rounded-3xl border border-white/10 bg-black/20">
-            <div className="flex items-center gap-4 border-b border-white/10 px-5 py-4" style={{ borderColor: `${primaryColor}33` }}>
+            <div className="flex flex-col gap-4 border-b border-white/10 px-5 py-4 sm:flex-row sm:items-center" style={{ borderColor: `${primaryColor}33` }}>
               <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-white/10">
                 {previewLogo ? (
                   <img src={previewLogo} alt="Brand logo preview" className="h-full w-full object-cover" />
@@ -232,7 +232,7 @@ export default function Settings() {
               </div>
               <div>
                 <p className="text-xs uppercase tracking-[0.2em] text-white/50">Brand Preview</p>
-                <h4 className="mt-1 text-xl font-semibold text-white">{previewName}</h4>
+                <h4 className="mt-1 break-words text-xl font-semibold text-white">{previewName}</h4>
               </div>
             </div>
 

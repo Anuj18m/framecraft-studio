@@ -158,7 +158,7 @@ export default function GalleryShare() {
   return (
     <main className="min-h-screen bg-gray-950 text-white">
       <header className="border-b border-white/10 bg-white/5 backdrop-blur">
-        <div className="mx-auto flex max-w-4xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex max-w-4xl flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
           <div>
             <p className="text-xs uppercase tracking-[0.3em] text-amber-300/80">FrameCraft SaaS</p>
             <h1 className="mt-1 text-xl font-semibold">Share Gallery</h1>
@@ -166,7 +166,7 @@ export default function GalleryShare() {
 
           <Link
             to={`/galleries/${gallery.id}`}
-            className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/10"
+            className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-center text-sm font-medium text-white transition hover:bg-white/10 sm:w-auto"
           >
             Back to Gallery
           </Link>
@@ -208,7 +208,7 @@ export default function GalleryShare() {
                 type="button"
                 onClick={() => void handleCopyLink()}
                 disabled={!shareUrl}
-                className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
+                className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50 lg:w-auto"
               >
                 Copy Link
               </button>
@@ -219,7 +219,7 @@ export default function GalleryShare() {
                 type="button"
                 onClick={() => void handleCreate()}
                 disabled={working}
-                className="rounded-xl bg-amber-500 px-4 py-3 text-sm font-semibold text-gray-950 transition hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-70"
+                className="w-full rounded-xl bg-amber-500 px-4 py-3 text-sm font-semibold text-gray-950 transition hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto"
               >
                 {share ? 'Create New Link' : 'Create Share Link'}
               </button>
@@ -227,7 +227,7 @@ export default function GalleryShare() {
                 type="button"
                 onClick={() => void handleRegenerate()}
                 disabled={working || !share}
-                className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
+                className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
               >
                 Regenerate Link
               </button>
@@ -235,7 +235,7 @@ export default function GalleryShare() {
                 type="button"
                 onClick={() => void handleDisable()}
                 disabled={working || !share || !share.is_active}
-                className="rounded-xl border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm font-medium text-red-100 transition hover:bg-red-500/20 disabled:cursor-not-allowed disabled:opacity-50"
+                className="w-full rounded-xl border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm font-medium text-red-100 transition hover:bg-red-500/20 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
               >
                 Disable Link
               </button>

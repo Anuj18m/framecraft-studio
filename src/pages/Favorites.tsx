@@ -75,7 +75,7 @@ export default function Favorites() {
   return (
     <main className="min-h-screen bg-gray-950 text-white">
       <header className="border-b border-white/10 bg-white/5 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
           <div>
             <p className="text-xs uppercase tracking-[0.3em] text-amber-300/80">FrameCraft SaaS</p>
             <h1 className="mt-1 text-xl font-semibold">Client Favorites</h1>
@@ -83,7 +83,7 @@ export default function Favorites() {
 
           <Link
             to="/dashboard"
-            className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/10"
+            className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-center text-sm font-medium text-white transition hover:bg-white/10 sm:w-auto"
           >
             Back to Dashboard
           </Link>
@@ -181,8 +181,8 @@ export default function Favorites() {
                 <article key={item.photoId} className="rounded-2xl border border-white/10 bg-black/20 p-5">
                   <div className="flex flex-wrap items-start justify-between gap-4">
                     <div>
-                      <h4 className="text-lg font-semibold text-white">{item.photo?.file_name ?? 'Selected photo'}</h4>
-                      <p className="mt-1 text-sm text-white/60">{item.gallery?.title ?? 'Unknown gallery'}</p>
+                      <h4 className="break-words text-lg font-semibold text-white">{item.photo?.file_name ?? 'Selected photo'}</h4>
+                      <p className="mt-1 break-words text-sm text-white/60">{item.gallery?.title ?? 'Unknown gallery'}</p>
                     </div>
 
                     <span className="rounded-full border border-amber-400/20 bg-amber-500/10 px-3 py-1 text-xs uppercase tracking-[0.2em] text-amber-100">
@@ -201,10 +201,10 @@ export default function Favorites() {
 
                     <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
                       <p className="text-xs uppercase tracking-[0.2em] text-white/55">Selection Details</p>
-                      <div className="mt-3 space-y-2 text-sm text-white/70">
+                      <div className="mt-3 space-y-2 break-words text-sm text-white/70">
                         <p>Photo ID: {item.photoId}</p>
                         <p>Most recent selection: {new Date(item.mostRecentAt).toLocaleString()}</p>
-                        <p>Gallery: {item.gallery?.title ?? 'Unknown'}</p>
+                        <p>Gallery: {item.gallery?.title ?? 'Unknown gallery'}</p>
                       </div>
                     </div>
                   </div>
